@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserInform } from 'src/app/_models/UserInform';
 import { AccountService } from 'src/app/_services/account.service';
-
+import { BehaviorSubject,Observable, Subject, of, from, takeUntil,timer} from 'rxjs';
 @Component({
   selector: 'app-member',
   templateUrl: './member.component.html',
@@ -12,11 +12,24 @@ export class MemberComponent implements OnInit {
   userInform?: UserInform;
   userInformUserName?: string[];
   userDetailCol?: UserInform[];
+
+
+  // sessionWarningTimer:  Subject<any> = new Subject<any>();
+  // private sessionWarningTimer$ = this.sessionWarningTimer.asObservable();
+  destroy$: Subject<boolean> = new Subject<boolean>();
+  //private destroyed = new Subject();
+  //private destroyed$ = this.sessionWarningTimer.asObservable();
+  
   constructor(public accountService:AccountService) { }
 
   ngOnInit(): void {
     this.LoadMemberData();
-    //this.accountService.findsessionTime();
+    // this.accountService.sessionWarningTimer$.pipe(takeUntil(this.destroy$))
+    //     .subscribe(() => this.displaySessionWarning());
+    
+  }
+  displaySessionWarning() {
+    this.accountService.findsessionTime();
   }
 
 
@@ -33,6 +46,7 @@ export class MemberComponent implements OnInit {
     } 
   })
 }
+
   
 Revoke()
   {
@@ -44,5 +58,9 @@ Revoke()
     } 
   })
 }
+
+// ngOnDestroy() {
+//   this.destroy$.next(true);
+// }
 
 }

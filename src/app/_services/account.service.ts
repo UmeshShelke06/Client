@@ -1,14 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { BehaviorSubject, catchError, map, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, Subject, throwError, timer,takeUntil,from } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { LoginInfo } from '../_models/loginInfo';
 import { RegisterInfo } from '../_models/registeInfo';
 import { TokenInfo } from '../_models/TokenInfo';
 import { UserInfo } from '../_models/userInfo';
 import { UserInform } from '../_models/UserInform';
-
 
 
 @Injectable({
@@ -20,9 +19,11 @@ export class AccountService {
   baseUrl = environment.apiUrl;
   refreshToken!: string;
 
+  sessionWarningTimer$: Subject<any> = new Subject<any>();
   private currentUserSource = new BehaviorSubject<UserInfo | null>(null);
 
   currentUser$ = this.currentUserSource.asObservable();
+
 
   constructor(private http: HttpClient,private toastr: ToastrService) { }
 
@@ -79,7 +80,7 @@ export class AccountService {
   }
 
   tokenExpired(token: string): boolean {
-    const expiry = (JSON.parse(atob(token.split('.')[1]))).exp;
+    const expiry = (JSON.parse(atob(token?.split('.')[1]))).exp;
     console.log(' Token expiry', expiry);
     return (Math.floor((new Date).getTime() / 1000)) >= expiry;
   }
@@ -90,11 +91,13 @@ export class AccountService {
   const jwtToken = JSON.parse(atob(tokenValue.split('.')[1]));
     const expires = new Date(jwtToken.exp * 1000);
     console.log(' Token expiry actual time', expires);
-    const timeout = expires.getMinutes() - new Date().getMinutes();
+    const timeout = expires.getTime() - new Date().getTime();
+    var sec = Math.floor(timeout/1000);
+    var min = Math.floor(sec/60);
     console.log(' Token expiry timeout in mIn', timeout);
-    this.toastr.warning('your session Time is going to expire in ' + timeout + 'min');
+    this.toastr.warning('your session Time is going to expire in ' + min + ': min' +  ','  + sec + ':sec');
     //this.toastr.success('');
-    return timeout;
+    return expires;
 
  }
 
@@ -127,6 +130,7 @@ export class AccountService {
     return this.http
       .get(this.baseUrl + 'Token/Revoke');
   }
+
 
 }
 

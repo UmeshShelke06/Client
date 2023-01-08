@@ -12,6 +12,7 @@ import { HomeComponent } from './Home/home/home.component';
 import { MemberComponent } from './member/member/member.component';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BnNgIdleService } from 'bn-ng-idle';
 
 export function tokenGetter() {
   return localStorage.getItem("Token");
@@ -48,7 +49,7 @@ export function tokenGetter() {
     }),
      
   ],
-  providers: [{provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}],
+  providers: [{provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}, BnNgIdleService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

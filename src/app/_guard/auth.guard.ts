@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
       return of(true);
     }
     else {
-      if(this.router.url == '/' ||  this.router.url == '/app-register')
+      if(!this.accountService.tokenExpired(Token!) && this.router.url == '/' ||  this.router.url == '/app-register')
       {
       this.router.navigateByUrl(this.router.url.toString());
       return of(false);
